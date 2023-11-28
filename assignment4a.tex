@@ -1,0 +1,233 @@
+\documentclass[11pt]{article}
+\renewcommand\thesection{Part \Alph{section}.}
+\renewcommand\thesubsection{\thesection\arabic{subsection}.}
+\setlength{\abovecaptionskip}{15pt plus 3pt minus 2pt}
+\usepackage{amsfonts, amsmath}
+\usepackage{xcolor}
+\usepackage{latexsym,enumitem}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\newcommand{\poly}{\mathsf{poly}}
+\newcommand{\clientmsg}{\mathsf{cmsg}}
+\newcommand{\cookie}{\mathsf{cookie}}
+\newcommand{\compress}{\mathsf{compress}}
+\newcommand{\zlib}{\mathsf{zlib}}
+\newcommand{\AES}{\mathsf{AES}}
+\newcommand{\encrypt}{\mathsf{encrypt}}
+\newcommand{\MAC}{\mathrm{mac}}
+\newcommand{\mac}{\mathrm{mac}}
+\newcommand{\UFCMA}{\mathsf{UFCMA}}
+\newcommand{\sign}{\mathsf{Sign}}
+\newcommand{\verify}{\mathsf{Verify}}
+\newcommand{\UFCMAU}{\UFCMA \mhyphen \mathsf{Unique}}
+\newcommand{\CPA}{\mathsf{CPA}}
+\newcommand{\INDCPAUQ}{\CPA\mhyphen \mathsf{Unique}}
+\newcommand{\uniq}{\mathrm{uq}}
+\newcommand{\func}[1]{\mathsf{Func}\left[ #1 \right]}
+\newcommand{\grp}{\mathbb{G}}
+\newcommand{\negl}{\mathsf{negl}}
+\newcommand{\TODO}[1]{\textcolor{red}{TODO : #1}}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdfpagemode=FullScreen,
+}
+
+
+\setlength{\oddsidemargin}{.25in}
+\setlength{\evensidemargin}{.25in}
+\setlength{\textwidth}{6in}
+\setlength{\topmargin}{-0.4in}
+\setlength{\textheight}{8.5in}
+\mathchardef\mhyphen="2D
+
+
+\newcommand{\handout}[5]{
+   \renewcommand{\thepage}{#1-\arabic{page}}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{
+    \hbox to 5.78in { {\bf COL759 Cryptography} \hfill #2 }
+       \vspace{4mm}
+       \hbox to 5.78in { {\Large \hfill #5  \hfill} }
+       \vspace{2mm}
+       \hbox to 5.78in { {\it #3 \hfill #4} }
+      }
+   }
+   \end{center}
+   \vspace*{4mm}
+}
+
+\newcommand{\ho}[4]{\handout{#1}{#2}{Instructor:
+#3}{Due Date: #4}{Problem Set #1}}
+
+\newtheorem{definition}{Definition}
+\newtheorem{problem}{Problem}
+
+\newcommand{\prob}[1]{\mathsf{Pr}\left[ #1 \right]}
+\newcommand{\bit}{\left\{0, 1\right\}}
+\newcommand{\enc}{\mathsf{Enc}}
+\newcommand{\dec}{\mathsf{Dec}}
+\newcommand{\enctwo}{\mathsf{Enc}\mhyphen \mathsf{two}}
+\newcommand{\dectwo}{\mathsf{Dec}\mhyphen \mathsf{two}}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calB}{\mathcal{B}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calE}{\mathcal{E}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\calG}{\mathcal{G}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calI}{\mathcal{I}}
+\newcommand{\calK}{\mathcal{K}}
+\newcommand{\kmac}{\calK_{\mathrm{mac}}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\calY}{\mathcal{Y}}
+\newcommand{\garbled}[1]{\hat{#1}}
+\newcommand{\gc}{\mathsf{GC}}
+\newcommand{\garble}{\mathsf{Garble}}
+\newcommand{\eval}{\mathsf{Eval}}
+\newcommand{\ord}{\mathsf{ord}}
+\newcommand{\grpgen}[2]{\langle #1 \rangle_{#2}}
+\newcommand{\inparen}[1]{\left{ #1 \right}}
+\newcommand{\probtwo}[2]{\mathsf{Pr}_{#1}\left[ #2 \right]}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+\newcommand{\ct}{\mathsf{ct}}
+\newcommand{\mtrx}[1]{\mathbf{#1}}
+\newcommand{\rankone}[1]{\mathsf{Rank}_1\left[ #1 \right]}
+\newcommand{\DDHp}{\mathsf{powersDDH}}
+\newcommand{\DDH}{\mathsf{DDH}}
+\newcommand{\ptxtint}{\mathsf{PTXT}\mhyphen\mathsf{INT}}
+\newlength{\protowidth}
+\newcommand{\pprotocol}[5]{
+{\begin{figure*}[#3]
+\begin{center}
+\setlength{\protowidth}{\textwidth}
+\addtolength{\protowidth}{-3\intextsep}
+
+\fbox{
+        \small
+        \hbox{\quad
+        \begin{minipage}{\protowidth}
+    \begin{center}
+    {\bf #1}
+    \end{center}
+        #5
+        \end{minipage}
+        \quad}
+
+        }
+        
+\end{center}
+\vspace{-4ex}
+\caption{{#4} #2}
+\end{figure*}
+} }
+
+% the first arg is name of security game
+% the second arg is caption
+% the label needs to be included as third arg
+% the fourth arg is the game description
+
+\newcommand{\securitygame}[4]{
+   \pprotocol{#1}{#2}{tbh!}{#3}{#4}
+}
+\newcommand{\thh}{^\mathrm{th}}
+
+\newcommand{\constr}[4]{
+   \pprotocol{#1}{#2}{tbh!}{#3}{#4}
+}
+
+% \usepackage[most]{tcolorbox}
+
+% \definecolor{codegray}{rgb}{0.98,0.97,0.93}
+% \definecolor{cottoncandy}{rgb}{1.0, 0.74, 0.85}
+% \definecolor{darkcerulean}{rgb}{0.03, 0.27, 0.49}
+\definecolor{darkcyan}{rgb}{0.0, 0.50, 0.45}
+% \newtcolorbox{constbox}[1][]{every float=\centering,breakable,enhanced,colback=white,colframe=codegray!50!black}
+
+% \definecolor{beige}{rgb}{0.96, 0.96, 0.86}
+
+% \newtcolorbox{cktbox}[1][]{every float=\centering,breakable,enhanced,colback=beige,colframe=codegray!50!black}
+
+% \newcommand{\const}[1]{
+%    \begin{constbox}
+%          #1
+%    \end{constbox}
+% }
+
+
+
+\begin{document}
+    \ho{4(a)}{Semester 1, 2023-24}{Venkata K}{15 November 2023}
+
+
+    \paragraph{Instructions:}
+    \begin{itemize}
+        \item Assignment must be done in groups of size at most $2$. Each group must submit one pdf on Gradescope, and mention the partner's name (if any). 
+        \item This is the first part of Assignment 4 (worth 15 marks), consisting of theoretical questions. All questions are compulsory in this part. The deadline for this part is \textbf{15th November 2023}. 
+        \item All solutions must be typeset in LaTeX. 
+    \end{itemize}
+
+
+    \paragraph{Notations:}
+    \begin{itemize}  
+        \item For a composite number $n$, $\Z_n$ denotes the set $\set{0, 1, \ldots, n-1}$, and $\Z^*_n = \set{ y : \gcd(y,n) = 1}$. 
+    \end{itemize}
+
+    \newpage 
+    
+
+    \begin{enumerate}
+
+        \item (15 marks) \textbf{Collision Resistant Hashing based on number-theoretic assumptions}
+
+        For every security parameter $\lambda$, let $\calK_{\lambda}$ denote the set of keys, $\calX_{\lambda}$ the input space and $\calY_{\lambda}$ the output space, where $|\calX_{\lambda}| > |\calY_{\lambda}|$. A family of keyed deterministic functions $\calH = \set{h_k : \calX_{\lambda} \to \calY_{\lambda}}_{k \in \calK_{\lambda}}$ is said to be collision resistant if, for any p.p.t. adversary, the following probability is negligible: 
+        \[
+            \Pr\left[ 
+                \begin{array}{c}
+                    k \gets \calK_{\lambda} \\ 
+                    (x_0, x_1) \gets \calA(k) \\
+                    h_k(x_0) = h_k(x_1)
+                \end{array}
+            \right]
+        \]
+
+        \medskip 
+
+        As we discussed in class, constructing CRHFs from generic cryptographic primitives (such as OWFs, PRFs, public key encryption) is challenging, and currently we don't have any constructions of CRHFs from these primitives. Therefore, we either need to rely on heuristic constructions (the most widely used CRHFs are based on heuristics)\footnote{Note that these heuristics have been extensively cryptanalyzed over the last few decades, and therefore, it is now safe to assume that these heuristics are good candidates for CRHFs}, or we need to rely on number-theoretic assumptions. In this assignment, we will see two constructions, one based on the discrete log problem, and another based on the RSA problem. 
+
+        \begin{enumerate}
+            \item (8 marks) Let $\calG$ be an infinite family of groups such that the discrete log problem is hard for $\calG$ (see Definition 6.8 in the notes). For security parameter $\lambda$, let $(q, g, \cdot) \gets \calG(1^{\lambda})$, and let $\grp$ denote the $q$-order group generated by $g$. The key space of our hash function is $\grp^{\lambda}$ (that is, each key consists of $\lambda$ group elements), the input space is $\Z_q^{\lambda}$, and the output space is $\grp$. The evaluation, using key $k = (g_1, g_2, \ldots, g_{\lambda})$, on input $(\alpha_1, \ldots, \alpha_{\lambda})$, is $$ \prod_{i=1}^{\lambda} g_i^{\alpha_i}.$$
+
+            Show that if there exists a p.p.t. algorithm $\calA$ that breaks the collision-resistance property of this hash function family with probability $\epsilon$, then there exists a p.p.t. algorithm $\calB$ that breaks the discrete log assumption with probability $\epsilon - \negl(n)$. 
+
+
+            \vspace{10pt}
+
+            \textbf{Easier Version (5 marks)} Show that if there exists a p.p.t. algorithm $\calA$ that breaks the collision-resistance property of this hash function family with non-negligible probability $\epsilon$, then there exists a p.p.t. algorithm $\calB$ that breaks the discrete log assumption with non-negligible probability $\epsilon'$. Unlike the `full-credit' version, here $\epsilon'$ can be equal to $\epsilon/\poly(n)$. 
+
+
+            \vspace{20pt}
+
+            \item (7 marks) Let $N=p\cdot q$ be the RSA modulus and $e$ is a random prime in $\Z_{\phi(N)}$ that is co-prime to $\phi(N)$. Consider the following hash function family. The key is $N, e$, and a random integer $z \gets \Z^*_N$. The hash function $h_{N, e, z}: \Z_N^* \times \Z_e \to \Z_N^*$, where $h_{N, e, z}(x, y) = x^e\cdot z^y \bmod N$. Show that this is a secure collision-resistant hash function, assuming RSA is secure.\footnote{For this problem, you can use the RSA variant where $e$ is a random prime in $Z_{\phi(N)}$ that is co-prime to $\phi(N)$. } 
+    
+            \textbf{Note: } Wherever you compute an inverse, specify why the inverse can be computed efficiently. 
+    
+
+        \end{enumerate}
+
+    \end{enumerate}
+
+\end{document}
